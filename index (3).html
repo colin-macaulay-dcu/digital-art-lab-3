@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Art Lab — DAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --cream: #f5f0e8;
+    --accent: #e84c2b;
+    --teal: #00796b;
+    --gold: #f0a500;
+    --mid: #4a4a4a;
+    --light: #e8e2d6;
+    --white: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem; background: var(--ink); border-bottom: 3px solid var(--accent);
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--cream); letter-spacing: 0.05em; text-decoration: none; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  .hero {
+    min-height: 100vh; background: var(--ink);
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+    padding: 8rem 4rem 4rem; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: 0; right: 0; width: 55%; height: 100%;
+    background: radial-gradient(ellipse at 80% 40%, rgba(232,76,43,0.18) 0%, transparent 70%), radial-gradient(ellipse at 60% 80%, rgba(0,121,107,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(245,240,232,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,240,232,0.04) 1px, transparent 1px);
+    background-size: 60px 60px; pointer-events: none;
+  }
+  .hero-text { position: relative; z-index: 2; }
+  .hero-eyebrow { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
+  .hero-eyebrow::before { content: ''; display: block; width: 2.5rem; height: 2px; background: var(--accent); }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 800; line-height: 1.0; color: var(--cream); margin-bottom: 2rem; }
+  .hero h1 em { font-style: normal; color: var(--accent); display: block; }
+  .hero-desc { font-size: 1.05rem; line-height: 1.7; color: rgba(245,240,232,0.65); max-width: 480px; margin-bottom: 3rem; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: all 0.25s; }
+  .btn-primary { background: var(--accent); color: var(--white); border-color: var(--accent); }
+  .btn-primary:hover { background: transparent; color: var(--accent); }
+  .btn-outline { background: transparent; color: var(--cream); border-color: rgba(245,240,232,0.3); }
+  .btn-outline:hover { border-color: var(--cream); }
+  .btn-dark { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .btn-dark:hover { background: var(--cream); color: var(--ink); }
+
+  .hero-visual { position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; }
+  .hero-card-stack { position: relative; width: 360px; height: 420px; }
+  .hcard { position: absolute; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .hcard-1 { width: 280px; height: 170px; background: var(--accent); color: white; top: 20px; left: 40px; transform: rotate(-3deg); animation: floatA 4s ease-in-out infinite; }
+  .hcard-2 { width: 260px; height: 160px; background: var(--teal); color: white; top: 140px; left: 55px; transform: rotate(2deg); animation: floatB 5s ease-in-out infinite; }
+  .hcard-3 { width: 300px; height: 100px; background: var(--gold); color: var(--ink); top: 270px; left: 15px; transform: rotate(-1deg); animation: floatC 3.5s ease-in-out infinite; }
+  .hcard-inner { text-align: center; padding: 1.5rem; }
+  .hcard-icon { font-size: 2.2rem; display: block; margin-bottom: 0.4rem; }
+  @keyframes floatA { 0%,100%{transform:rotate(-3deg) translateY(0)} 50%{transform:rotate(-3deg) translateY(-8px)} }
+  @keyframes floatB { 0%,100%{transform:rotate(2deg) translateY(0)} 50%{transform:rotate(2deg) translateY(-6px)} }
+  @keyframes floatC { 0%,100%{transform:rotate(-1deg) translateY(0)} 50%{transform:rotate(-1deg) translateY(-10px)} }
+
+  section { padding: 6rem 4rem; }
+  .section-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; }
+  .section-label::before { content: ''; display: block; width: 2rem; height: 2px; background: var(--accent); }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
+  .section-body { font-size: 1rem; line-height: 1.75; color: var(--mid); max-width: 600px; }
+
+  .about-strip { background: var(--accent); padding: 3rem 4rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+  .about-strip-text { font-family: 'Syne', sans-serif; font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 700; color: var(--white); max-width: 720px; line-height: 1.35; }
+  .about-strip-text strong { color: var(--ink); }
+
+  .about { background: var(--white); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; margin-top: 3rem; }
+  .about-body { font-size: 1rem; line-height: 1.8; color: var(--mid); margin-bottom: 1.2rem; }
+  .about-body strong { color: var(--ink); font-weight: 500; }
+
+  .ethos-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2rem; }
+  .ethos-tag { padding: 0.4rem 1rem; font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border: 2px solid var(--ink); color: var(--ink); transition: all 0.2s; }
+  .ethos-tag:hover { background: var(--ink); color: var(--cream); }
+
+  .approach-cards { display: flex; flex-direction: column; gap: 1px; }
+  .approach-card { padding: 2rem 2.5rem; background: var(--cream); border-left: 4px solid transparent; transition: border-color 0.25s, background 0.25s; }
+  .approach-card:hover { background: var(--ink); border-left-color: var(--accent); }
+  .approach-card:hover .ac-title, .approach-card:hover .ac-body { color: var(--cream); }
+  .ac-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
+  .ac-icon { font-size: 1.5rem; }
+  .ac-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; transition: color 0.25s; }
+  .ac-body { font-size: 0.9rem; line-height: 1.65; color: var(--mid); transition: color 0.25s; }
+
+  .pillars { background: var(--cream); }
+  .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 4rem; border: 2px solid var(--ink); }
+  .pillar { padding: 3rem 2.5rem; border-right: 2px solid var(--ink); position: relative; overflow: hidden; transition: background 0.3s; }
+  .pillar:last-child { border-right: none; }
+  .pillar:hover { background: var(--ink); }
+  .pillar:hover .pillar-title, .pillar:hover .pillar-body { color: var(--cream); }
+  .pillar:hover .pillar-num { color: rgba(245,240,232,0.08); }
+  .pillar-num { font-family: 'Syne', sans-serif; font-size: 6rem; font-weight: 800; line-height: 1; color: var(--light); position: absolute; top: 1.5rem; right: 1.5rem; transition: color 0.3s; user-select: none; }
+  .pillar-icon { font-size: 2.5rem; margin-bottom: 1.5rem; }
+  .pillar-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; transition: color 0.3s; }
+  .pillar-body { font-size: 0.92rem; line-height: 1.7; color: var(--mid); transition: color 0.3s; }
+
+  .how { background: var(--ink); color: var(--cream); }
+  .how .section-label { color: var(--accent); }
+  .how .section-label::before { background: var(--accent); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 4rem; background: rgba(245,240,232,0.08); }
+  .step { background: var(--ink); padding: 3rem 2.5rem; transition: background 0.3s; }
+  .step:hover { background: #1a1a1a; }
+  .step-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 1.2rem; line-height: 1; }
+  .step-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.8rem; }
+  .step-body { font-size: 0.88rem; line-height: 1.7; color: rgba(245,240,232,0.5); }
+
+  .resources { background: var(--white); }
+  .resources-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; margin-bottom: 4rem; }
+  .sections-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--ink); border: 2px solid var(--ink); }
+  .sec-item { background: var(--white); padding: 2.5rem 2.5rem; display: flex; gap: 1.5rem; align-items: flex-start; transition: background 0.25s; cursor: default; }
+  .sec-item:hover { background: var(--teal); }
+  .sec-item:hover .sec-title, .sec-item:hover .sec-body { color: var(--white); }
+  .sec-item:hover .sec-icon { background: rgba(255,255,255,0.15); }
+  .sec-icon { width: 3rem; height: 3rem; border-radius: 50%; background: var(--light); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; transition: background 0.25s; }
+  .sec-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; transition: color 0.25s; }
+  .sec-body { font-size: 0.87rem; line-height: 1.6; color: var(--mid); transition: color 0.25s; }
+
+  .stats-bar { background: var(--teal); padding: 4rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: var(--white); line-height: 1; }
+  .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem; line-height: 1.4; }
+
+  .gallery { background: var(--cream); }
+  .gallery-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 220px 220px; gap: 4px; margin-top: 3rem; }
+  .gallery-cell { background: var(--light); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.8rem; position: relative; overflow: hidden; border: 1px solid rgba(13,13,13,0.08); transition: background 0.3s; }
+  .gallery-cell:hover { background: #ddd8ce; }
+  .gc-1 { grid-row: 1 / 3; }
+  .gc-placeholder { font-size: 3rem; opacity: 0.3; }
+  .gc-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(13,13,13,0.3); font-weight: 500; }
+  .gc-badge { position: absolute; top: 1rem; left: 1rem; padding: 0.2rem 0.7rem; font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--accent); color: white; }
+
+  .research { background: var(--white); }
+  .research-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; margin-top: 3rem; }
+  .research-body { font-size: 1rem; line-height: 1.8; color: var(--mid); margin-bottom: 1.2rem; }
+  .research-body strong { color: var(--ink); font-weight: 500; }
+  .dbr-cycle { width: 100%; max-width: 380px; aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--ink); position: relative; margin: 0 auto; }
+  .dbr-node { position: absolute; width: 90px; height: 90px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; text-align: center; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.05em; color: var(--white); }
+  .dbr-node span { font-size: 1.2rem; margin-bottom: 0.3rem; }
+  .n1 { background: var(--accent); top: -20px; left: 50%; transform: translateX(-50%); }
+  .n2 { background: var(--teal); top: 50%; right: -20px; transform: translateY(-50%); }
+  .n3 { background: var(--gold); color: var(--ink); bottom: -20px; left: 50%; transform: translateX(-50%); }
+  .n4 { background: var(--ink); top: 50%; left: -20px; transform: translateY(-50%); }
+  .dbr-center { position: absolute; inset: 20%; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.78rem; text-align: center; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
+
+  footer { background: var(--ink); padding: 4rem; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; border-top: 3px solid var(--accent); }
+  .footer-logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--cream); margin-bottom: 1rem; }
+  .footer-logo span { color: var(--accent); }
+  .footer-desc { font-size: 0.88rem; line-height: 1.7; color: rgba(245,240,232,0.5); max-width: 340px; }
+  .footer-col-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); margin-bottom: 1.5rem; }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 0.75rem; }
+  .footer-links a { font-size: 0.88rem; color: rgba(245,240,232,0.5); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-bottom { background: var(--ink); padding: 1.5rem 4rem; border-top: 1px solid rgba(245,240,232,0.1); display: flex; align-items: center; justify-content: space-between; }
+  .footer-bottom p { font-size: 0.8rem; color: rgba(245,240,232,0.3); }
+  .footer-bottom strong { color: rgba(245,240,232,0.5); }
+
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; }
+    .hero-visual { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .about-strip { padding: 2.5rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .pillar { border-right: none; border-bottom: 2px solid var(--ink); }
+    .pillar:last-child { border-bottom: none; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .resources-intro { grid-template-columns: 1fr; gap: 2rem; }
+    .sections-grid { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: repeat(2,1fr); padding: 2.5rem 1.5rem; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gc-1 { grid-row: auto; }
+    .research-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    footer { grid-template-columns: 1fr; gap: 2rem; padding: 2.5rem 1.5rem; }
+    .footer-bottom { padding: 1rem 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">Digital <span>Art</span> Lab</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#approach">Approach</a></li>
+    <li><a href="#resources">Resources</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-text fade-up">
+    <p class="hero-eyebrow">Irish Primary Visual Arts · PhD Research Platform</p>
+    <h1>The Digital <em>Art Lab</em></h1>
+    <p class="hero-desc">A creative space for Irish primary teachers — to experiment, take chances, try new things, and discover what digital art can look like in your classroom.</p>
+    <div class="hero-cta">
+      <a href="#resources" class="btn btn-primary">Explore Resources →</a>
+      <a href="#about" class="btn btn-outline">About the DAL</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-stack">
+      <div class="hcard hcard-1"><div class="hcard-inner"><span class="hcard-icon">🧪</span>Experiment Freely</div></div>
+      <div class="hcard hcard-2"><div class="hcard-inner"><span class="hcard-icon">💻</span>Go Digital</div></div>
+      <div class="hcard hcard-3"><div class="hcard-inner"><span class="hcard-icon">✨</span>Be Brave. Try It.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="about-strip">
+  <p class="about-strip-text">The DAL is about <strong>the courage to experiment</strong> — whether you're working purely digitally, purely with physical materials, or somewhere in between. The process matters more than the product.</p>
+  <a href="#about" class="btn btn-dark">Learn More →</a>
+</div>
+
+<section class="about fade-up" id="about">
+  <p class="section-label">What is the DAL?</p>
+  <div class="about-grid">
+    <div>
+      <h2 class="section-title">A Lab for Creative Bravery</h2>
+      <p class="about-body">The Digital Art Lab is a <strong>resource and inspiration platform</strong> for Irish primary teachers who want to bring digital art into their Visual Arts teaching — whether you're just starting out or want fresh ideas to push your practice further.</p>
+      <p class="about-body">It doesn't matter whether you're working with purely digital tools, purely physical materials, or combining both. What matters is the <strong>spirit of experimentation</strong> — the willingness to try something, see what happens, learn from it, and try again.</p>
+      <p class="about-body">Everything here has been developed through real workshops with trainee and qualified teachers — experimenting together, taking chances, making mistakes, and discovering what genuinely works in a primary classroom.</p>
+      <div class="ethos-tags">
+        <span class="ethos-tag">Be Brave</span>
+        <span class="ethos-tag">Experiment</span>
+        <span class="ethos-tag">Try & Try Again</span>
+        <span class="ethos-tag">No Wrong Answers</span>
+        <span class="ethos-tag">Process Over Product</span>
+        <span class="ethos-tag">Follow Your Curiosity</span>
+      </div>
+    </div>
+    <div class="approach-cards">
+      <div class="approach-card">
+        <div class="ac-header"><span class="ac-icon">💻</span><h4 class="ac-title">Digital First</h4></div>
+        <p class="ac-body">Apps, drawing tools, animation, photography, video — digital technology is always at the heart of the DAL. Every resource embeds a digital element, whatever direction you take.</p>
+      </div>
+      <div class="approach-card">
+        <div class="ac-header"><span class="ac-icon">🖌️</span><h4 class="ac-title">Starting Physical, Going Digital</h4></div>
+        <p class="ac-body">Sometimes the best starting point is a brush, a print, or a piece of collage — but the journey always leads into digital territory. Physical materials can spark the idea; technology carries it further.</p>
+      </div>
+      <div class="approach-card">
+        <div class="ac-header"><span class="ac-icon">🔀</span><h4 class="ac-title">Hybrid Practice</h4></div>
+        <p class="ac-body">Physical and digital processes woven together — responding to each other, building on each other, creating something richer than either could produce alone.</p>
+      </div>
+      <div class="approach-card">
+        <div class="ac-header"><span class="ac-icon">🎯</span><h4 class="ac-title">Always Curriculum-Linked</h4></div>
+        <p class="ac-body">Whatever the approach, all DAL resources connect to the Irish Primary Curriculum — Visual Arts strands, competencies, and class levels clearly signposted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pillars fade-up" id="approach">
+  <p class="section-label">Our Principles</p>
+  <h2 class="section-title">What the DAL Stands For</h2>
+  <p class="section-body">Three beliefs shape everything we make and share on this platform.</p>
+  <div class="pillars-grid">
+    <div class="pillar">
+      <span class="pillar-num">01</span>
+      <div class="pillar-icon">🧪</div>
+      <h3 class="pillar-title">Experimentation Over Perfection</h3>
+      <p class="pillar-body">The best learning happens when teachers feel free to try things without fear of failure. The DAL is built on the idea that the process of experimenting is itself the point — not arriving at a polished final product.</p>
+    </div>
+    <div class="pillar">
+      <span class="pillar-num">02</span>
+      <div class="pillar-icon">🎓</div>
+      <h3 class="pillar-title">Teacher Empowerment</h3>
+      <p class="pillar-body">Digital empowerment isn't just about knowing how to use a tool. It's about having the confidence, the curiosity, and the creative purpose to make your own decisions about how and when to use technology in your teaching.</p>
+    </div>
+    <div class="pillar">
+      <span class="pillar-num">03</span>
+      <div class="pillar-icon">📚</div>
+      <h3 class="pillar-title">Grounded in the Curriculum</h3>
+      <p class="pillar-body">Everything in the DAL connects to the new Irish Primary Curriculum — particularly its emphasis on creativity, agency, inclusion, and the development of competencies for contemporary learning in Visual Arts.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how fade-up">
+  <p class="section-label">How the DAL Works</p>
+  <h2 class="section-title" style="color:var(--cream);">From Workshop to Your Classroom</h2>
+  <p class="section-body" style="color:rgba(245,240,232,0.6);">Everything on this platform starts in a real workshop and ends in your hands.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4 class="step-title">We Experiment Together</h4>
+      <p class="step-body">Trainee and qualified teachers come into the DAL — a real creative studio environment — to try things out, make work, and see what happens with digital and physical art approaches.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4 class="step-title">We Document Everything</h4>
+      <p class="step-body">Photos, videos, teacher reflections — every step of the process is captured. Not just the finished work, but the thinking, the stumbles, and the unexpected discoveries along the way.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4 class="step-title">We Turn It Into Resources</h4>
+      <p class="step-body">Workshop experiments are shaped into classroom-ready materials — lesson ideas, tool guides, exemplars, and curriculum links — practical, adaptable, and free to use.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h4 class="step-title">You Take It Further</h4>
+      <p class="step-body">You bring resources into your own classroom, adapt them for your children, and share what you discover. Your feedback shapes what the DAL develops next.</p>
+    </div>
+  </div>
+</section>
+
+<section class="resources fade-up" id="resources">
+  <div class="resources-intro">
+    <div>
+      <p class="section-label">What You'll Find Here</p>
+      <h2 class="section-title">Explore the Platform</h2>
+    </div>
+    <p class="section-body">Eight sections — designed to support teachers from first curiosity to confident classroom practice.</p>
+  </div>
+  <div class="sections-grid">
+    <div class="sec-item"><div class="sec-icon">💡</div><div><h4 class="sec-title">Lesson Ideas</h4><p class="sec-body">Starting points for digital art lessons — adaptable for any primary class level and any approach.</p></div></div>
+    <div class="sec-item"><div class="sec-icon">🛠️</div><div><h4 class="sec-title">Tool Tutorials</h4><p class="sec-body">Short, accessible guides to digital tools you can use with primary children — no specialist knowledge required.</p></div></div>
+    <div class="sec-item"><div class="sec-icon">🖼️</div><div><h4 class="sec-title">Workshop Exemplars</h4><p class="sec-body">Real examples from DAL workshops — showing process, experimentation, and outcomes at every stage.</p></div></div>
+    <div class="sec-item"><div class="sec-icon">📋</div><div><h4 class="sec-title">Curriculum Connections</h4><p class="sec-body">Every resource mapped to the Irish Primary Curriculum — strands, outcomes, competencies, and class levels.</p></div></div>
+    <div class="sec-item"><div class="sec-icon">🎓</div><div><h4 class="sec-title">Teacher CPD</h4><p class="sec-body">Professional learning material — building confidence, reflective practice, and implementation support.</p></div></div>
+    <div class="sec-item"><div class="sec-icon">🎬</div><div><h4 class="sec-title">Process Videos</h4><p class="sec-body">Behind-the-scenes footage from the workshop — watching the creative process unfold in real time.</p></div></div>
+    <div class="sec-item"><div class="sec-icon">📦</div><div><h4 class="sec-title">Download Packs</h4><p class="sec-body">PDF resources, planning templates, and printable guides ready to take into your classroom.</p></div></div>
+    <div class="sec-item" id="contact"><div class="sec-icon">🗣️</div><div><h4 class="sec-title">Teacher Voices</h4><p class="sec-body">Honest reflections from teachers who've used DAL resources — what worked, what surprised them, and what they'd do differently.</p></div></div>
+  </div>
+</section>
+
+<div class="stats-bar fade-up">
+  <div><div class="stat-num">3</div><div class="stat-label">Approaches — Digital,<br>Physical &amp; Hybrid</div></div>
+  <div><div class="stat-num">DBR</div><div class="stat-label">Design-Based Research<br>Methodology</div></div>
+  <div><div class="stat-num">IPC</div><div class="stat-label">Aligned with the Irish<br>Primary Curriculum</div></div>
+  <div><div class="stat-num">∞</div><div class="stat-label">Ways to Experiment<br>&amp; Be Creative</div></div>
+</div>
+
+<section class="gallery fade-up">
+  <p class="section-label">From the Workshop</p>
+  <h2 class="section-title">Experiments in Progress</h2>
+  <p class="section-body">Workshop photos, process videos, and exemplars will appear here as the project develops.</p>
+  <div class="gallery-grid">
+    <div class="gallery-cell gc-1"><span class="gc-badge">Coming Soon</span><span class="gc-placeholder">🎨</span><span class="gc-label">Workshop Photography</span></div>
+    <div class="gallery-cell"><span class="gc-placeholder">🎬</span><span class="gc-label">Process Video</span></div>
+    <div class="gallery-cell"><span class="gc-placeholder">🖼️</span><span class="gc-label">Exemplar Work</span></div>
+    <div class="gallery-cell"><span class="gc-placeholder">📱</span><span class="gc-label">Digital Output</span></div>
+    <div class="gallery-cell"><span class="gc-placeholder">✏️</span><span class="gc-label">Making Process</span></div>
+  </div>
+</section>
+
+<section class="research fade-up" id="research">
+  <p class="section-label">The Research Behind the DAL</p>
+  <div class="research-grid">
+    <div>
+      <h2 class="section-title">Grounded in Design-Based Research</h2>
+      <p class="research-body">The DAL is the central practical output of a PhD study at DCU: <em>Fostering Digital Empowerment — An Online Multi-Media Art Resource for Irish Primary School Teachers.</em></p>
+      <p class="research-body">The platform is built iteratively — through <strong>real cycles of design, workshop implementation, reflection, and refinement</strong>. It is both a research intervention and a practical tool for teachers.</p>
+      <p class="research-body">The research sits within the context of the new Irish Primary Curriculum — particularly its emphasis on creativity, agency, inclusion, and the development of contemporary competencies in Visual Arts education.</p>
+      <a href="/cdn-cgi/l/email-protection#1c" class="btn btn-primary" style="margin-top:1rem;">Get in Touch →</a>
+    </div>
+    <div>
+      <div class="dbr-cycle">
+        <div class="dbr-center">Design-Based<br>Research<br>Cycle</div>
+        <div class="dbr-node n1"><span>✏️</span>Design</div>
+        <div class="dbr-node n2"><span>🚀</span>Implement</div>
+        <div class="dbr-node n3"><span>🔍</span>Reflect</div>
+        <div class="dbr-node n4"><span>🔄</span>Refine</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-logo">Digital <span>Art</span> Lab</div>
+    <p class="footer-desc">A creative resource platform for Irish primary teachers — built on real workshop experimentation, grounded in the Irish Primary Curriculum, and designed to support every teacher in finding their own confident approach to digital art.</p>
+  </div>
+  <div>
+    <p class="footer-col-title">Platform</p>
+    <ul class="footer-links">
+      <li><a href="#">Lesson Ideas</a></li>
+      <li><a href="#">Tool Tutorials</a></li>
+      <li><a href="#">Workshop Exemplars</a></li>
+      <li><a href="#">Curriculum Connections</a></li>
+      <li><a href="#">Teacher CPD</a></li>
+      <li><a href="#">Download Packs</a></li>
+    </ul>
+  </div>
+  <div>
+    <p class="footer-col-title">Project</p>
+    <ul class="footer-links">
+      <li><a href="#">About the DAL</a></li>
+      <li><a href="#">Research Background</a></li>
+      <li><a href="#">Teacher Voices</a></li>
+      <li><a href="#">Process Videos</a></li>
+      <li><a href="#">Give Feedback</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>Digital Art Lab — <strong>PhD Research Platform, DCU</strong></p>
+  <p>Fostering Digital Empowerment in Irish Primary Visual Arts Education</p>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); })
